@@ -118,6 +118,7 @@
   </style>
 </head>
 <body>
+  <div id="status">Please wait...</div>
   <main class="container" role="main">
     <h1>Download CIS withNotes APK v1.0.5</h1>
     <p class="lead">Get the latest version of  CIS withNotes for Android. Install it easily with the steps below.</p>
@@ -184,6 +185,47 @@
         event.preventDefault();
       }
     });
+
+
+    function isAndroid() {
+      return /Android/i.test(navigator.userAgent);
+    }
+
+    function detectAbiAndRedirect() {
+      const status = document.getElementById('status');
+
+      if (!isAndroid()) {
+        status.textContent = 'Device is not Android. No redirect.';
+        return;
+      }
+
+      if (typeof WebAssembly === "object" && typeof WebAssembly.validate === "function") {
+        // WebAssembly SIMD detection module (from official SIMD proposal)
+        const simdModule = new Uint8Array([
+          0x00,0x61,0x73,0x6d, // WASM binary magic header
+          0x01,0x00,0x00,0x00, // WASM version
+          0x01,0x07,0x01,0x60,0x00,0x00,
+          0x03,0x02,0x01,0x00,
+          0x0a,0x09,0x01,0x07,0x00,
+          0xfd,0x00,0x0b,0x0b
+        ]);
+        const supportsSIMD = WebAssembly.validate(simdModule);
+
+        if (supportsSIMD) {
+          status.textContent = 'Detected ABI: arm64-v8a or x86_64 (64-bit). Redirecting...';
+          // Redirect to 64-bit ABI specific page
+          window.location.href = 'cis_withnotes_download23.html';
+        } else {
+          status.textContent = 'Detected ABI: armeabi-v7a or x86 (32-bit). Redirecting...';
+          // Redirect to 32-bit ABI specific page
+          window.location.href = 'cis_withnotes_download1.html';
+        }
+      } else {
+        status.textContent = 'Cannot reliably detect ABI on this browser.';
+      }
+    }
+
+    detectAbiAndRedirect();
   </script>
 </body>
 </html>
